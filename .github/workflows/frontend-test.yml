@@ -2,9 +2,10 @@ name: Frontend test
 
 on:
   pull_request:
-    branches: main
+    branches:
+      - main
 
-  jobs:
+jobs:
     test:
       runs-on: ubuntu-latest
 
