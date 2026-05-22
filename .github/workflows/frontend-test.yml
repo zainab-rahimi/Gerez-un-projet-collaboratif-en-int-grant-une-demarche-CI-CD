@@ -1,9 +1,9 @@
 name: Frontend test
 
 on:
-  pull_request:
+  push:
     branches:
-      - main
+      - feature/add-ci-cd
 
 jobs:
   test:
@@ -24,7 +24,7 @@ jobs:
         run: npm ci
         working-directory: ./front
       - name: Run tests
-        run: npm test -- --watch=false --code-coverage --brower=ChromeHeadless
+        run: npm test -- --watch=false --code-coverage --browsers=ChromeHeadless
         working-directory: ./front
 
 
