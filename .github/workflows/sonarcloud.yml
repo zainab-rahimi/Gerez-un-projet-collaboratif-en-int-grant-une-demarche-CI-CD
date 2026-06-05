@@ -1,0 +1,62 @@
+name: SonarCloud Analysis
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  sonarcloud:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '16'
+          cache: 'npm'
+          cache-dependency-path: front/package-lock.json
+
+      - name: Install frontend dependencies
+        run: npm ci
+        working-directory: ./front
+
+      - name: Run frontend tests with coverage
+        run: npm run test -- --watch=false --browsers=ChromeHeadless --code-coverage
+        working-directory: ./front
+
+      - name: Run backend tests with JaCoCo
+        run: mvn -B -f back/pom.xml clean test jacoco:report
+
+      - name: SonarCloud scan
+        uses: SonarSource/sonarqube-scan-action@v6
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: https://sonarcloud.io
+        with:
+          args: >
+            -Dsonar.projectKey=${{ vars.SONAR_PROJECT_KEY }}
+            -Dsonar.organization=${{ vars.SONAR_ORGANIZATION }}
+            -Dsonar.sources=back/src/main/java,front/src
+            -Dsonar.tests=back/src/test/java
+            -Dsonar.test.inclusions=front/src/**/*.spec.ts,front/src/test.ts
+            -Dsonar.java.binaries=back/target/classes
+            -Dsonar.junit.reportPaths=back/target/surefire-reports
+            -Dsonar.coverage.jacoco.xmlReportPaths=back/target/site/jacoco/jacoco.xml
+            -Dsonar.javascript.lcov.reportPaths=front/coverage/bobapp/lcov.info
+            -Dsonar.exclusions=**/node_modules/**,**/*.spec.ts,**/src/test.ts,**/dist/**
