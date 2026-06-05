@@ -1,6 +1,9 @@
-name: Frontend test
+name: Frontend Test
 
 on:
+  push:
+    branches:
+      - main
   pull_request:
     branches:
       - main
@@ -23,9 +26,18 @@ jobs:
       - name: Install dependencies
         run: npm ci
         working-directory: ./front
+
       - name: Run tests
-        run: npm test -- --watch=false --code-coverage --brower=ChromeHeadless
+        run: npm run test -- --watch=false --browsers=ChromeHeadless --code-coverage
         working-directory: ./front
+
+      - name: Upload frontend coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-coverage-report
+          path: front/coverage
+          if-no-files-found: error
 
 
 
