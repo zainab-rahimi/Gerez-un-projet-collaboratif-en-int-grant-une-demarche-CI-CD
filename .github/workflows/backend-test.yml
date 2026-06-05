@@ -23,7 +23,7 @@ jobs:
           cache: 'maven'
 
       - name: Run backend tests
-        run: ./mvnw -B clean test jacoco:report
+        run: mvn -B clean test jacoco:report
         working-directory: ./back
 
       - name: Upload backend test reports
@@ -32,7 +32,7 @@ jobs:
         with:
           name: backend-test-reports
           path: back/target/surefire-reports
-          if-no-files-found: error
+          if-no-files-found: warn
 
       - name: Upload backend JaCoCo report
         if: always()
@@ -40,4 +40,4 @@ jobs:
         with:
           name: backend-jacoco-report
           path: back/target/site/jacoco
-          if-no-files-found: error
+          if-no-files-found: warn
