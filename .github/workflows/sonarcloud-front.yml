@@ -49,7 +49,6 @@ jobs:
             -Dsonar.projectKey=${{ vars.SONAR_PROJECT_KEY_FRONT }}
             -Dsonar.organization=${{ vars.SONAR_ORGANIZATION }}
             -Dsonar.sources=front/src
-            -Dsonar.tests=front/src
             -Dsonar.test.inclusions=front/src/**/*.spec.ts,front/src/test.ts
             -Dsonar.javascript.lcov.reportPaths=front/coverage/bobapp/lcov.info
             -Dsonar.exclusions=**/node_modules/**,**/dist/**
